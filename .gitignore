@@ -6,3 +6,4 @@ notebooks/data
 notebooks/cifar_net.pth
 .ipynb_checkpoints/
 notebooks/__pycache__/
+.DS_Store

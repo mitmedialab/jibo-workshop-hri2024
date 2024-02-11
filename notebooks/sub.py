@@ -16,7 +16,7 @@ from jibo_msgs.msg import JiboAsrResult
 class JiboTeleop(Node):
 
     def __init__(self):
-        super().__init__('jibo_teleop')
+        super().__init__('teleop_connection')
 
         self.jibo_pub = self.create_publisher(JiboAction, 'jibo', 10)
         self.jibo_state = self.create_subscription(JiboState, 'jibo_state', self.on_jibo_state_msg, 10)
@@ -39,8 +39,7 @@ class JiboTeleop(Node):
         self.is_listening = msg.is_listening
 
     def on_jibo_asr_results(self, data):
-        # self.get_logger().info('I heard: "%s"' % str(data))
-        self.get_logger().info('I heard: "%s"' % str(data.transcription))
+        self.get_logger().info('I heard: "%s"' % str(data))
         self.asr_transcription = data.transcription
         self.asr_confidence = data.confidence
         self.asr_heuristic_score = data.heuristic_score
@@ -207,6 +206,60 @@ class JiboTeleop(Node):
 
     def waitforJibo(self):
         while self.is_playing_sound or self.is_listening or self.doing_motion:
-            # print('Jibo still doing something')
+            print('Jibo still doing something')
             self.rate.sleep()
 
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    teleop_connection = JiboTeleop()
+    # Spin in a separate thread
+    thread = threading.Thread(target=rclpy.spin, args=(teleop_connection, ), daemon=True)
+    thread.start()
+
+    while rclpy.ok():
+        jibo_promts = 'Hi there, i am Jibo. Would you like to play with me?'
+        teleop_connection.send_tts_message(str(jibo_promts))
+        time.sleep(2.0)
+        teleop_connection.waitforJibo()
+
+        teleop_connection.send_motion_message('Dances/Celebrate_01.keys')
+        time.sleep(2.0)
+        teleop_connection.waitforJibo()
+
+
+        teleop_connection.send_sound_message('excited1-jibo-old1.wav')
+        time.sleep(2.0)
+        teleop_connection.waitforJibo()
+
+        # Change LED color RGB
+        teleop_connection.send_led_message(0.7,0.0,0.0)
+        time.sleep(2)
+        teleop_connection.send_led_message(0.0,0.0,0.0)
+        
+        # Change Jibo body position X, Y, Z axis
+        teleop_connection.send_lookat_message(0.9,0.0,0.0)
+        time.sleep(2)
+        teleop_connection.send_lookat_message(0.0,0.9,0.0)
+        time.sleep(2)
+        teleop_connection.send_lookat_message(0.0,0.0,0.9)
+
+        teleop_connection.JiboListen()
+        time.sleep(2)
+        teleop_connection.waitforJibo()
+
+        jibo_promts = 'Did you say: '+ teleop_connection.asr_transcription
+        teleop_connection.send_tts_message(str(jibo_promts))
+        time.sleep(2.2)
+        teleop_connection.waitforJibo()
+        teleop_connection.rate.sleep()
+        
+        time.sleep(2)
+
+    teleop_connection.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
