@@ -3,12 +3,11 @@
 {
     "name": "Ubuntu",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    //"image": "docker.io/mitprg/jibo-workshop-hri2024:latest",
     //"image": "mcr.microsoft.com/devcontainers/base:jammy",
     //"build" : {
     //    "dockerfile": "Dockerfile"
     //},
-    "image": "docker.io/mitprg/jibo-workshop-fol2024-ros2:latest",
+    "image": "docker.io/mitprg/jibo-workshop-hri2024-ros2:latest",
 
     "hostRequirements": {
         "cpus": 4
