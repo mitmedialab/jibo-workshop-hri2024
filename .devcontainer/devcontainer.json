@@ -13,7 +13,7 @@
         "cpus": 4
     },
     "waitFor": "onCreateCommand",
-    "updateContentCommand": "build.sh",
+    //"updateContentCommand": "build.sh",
     //"postCreateCommand": "/home/vscode/launch.sh",
     "customizations": {
         "codespaces": {
