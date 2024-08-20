@@ -1,178 +1,87 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
+<head>
+  <meta charset="utf-8" />
 
-    <!--
-    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-    -->
-    <script type="text/javascript" src="eventemitter2.min.js"></script>
-    <script type="text/javascript" src="roslib.min.js"></script>
-    <script type="text/javascript" src="mc.js"></script>
-    <script type="text/javascript">
-      let mc = new MC();
-      mc.init();
-    </script>
-    <style>
-      button {
-      min-width:120px;
-      padding:3px;
-      text-align:left;
-      font-size:14px;
-      font-weight:700;
-      border:2px solid darkgrey;
-      background-color:lightblue;
-      margin:1px;
-      }
-      body{ font-family: sans-serif; }
-    </style>
-  </head>
+  <!--
+  <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  -->
+  <script type="text/javascript" src="eventemitter2.min.js"></script>
+  <script type="text/javascript" src="roslib.min.js"></script>
+  <script type="text/javascript" src="mc.js"></script>
+  <script type="text/javascript">
+    let mc = new MC();
+    mc.init();
 
-  <body>
-    <h1>Jibo Mass STEM Week Intro</h1>
-    <br>
+    function setClicked(button) {
+      // Reset the color of all buttons
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => btn.classList.remove('clicked'));
+      
+      // Set the color of the clicked button
+      button.classList.add('clicked');
+    }
+  </script>
+  <style>
+    button {
+      min-width: 120px;
+      padding: 3px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 700;
+      border: 2px solid darkgrey;
+      background-color: lightblue;
+      margin: 1px;
+    }
+    button.clicked {
+      background-color: lightcoral; /* Color when clicked */
+      color: white;
+    }
+    body { font-family: sans-serif; }
+  </style>
+</head>
 
-    <div id="jibostate" style="position:fixed;width:50%;right:20px;top:20px;background-color:lightblue;text-align:right;padding:20px;font-family:sans-serif"></div>
+<body>
+  <h1>Jibo Mass STEM Week Intro</h1>
+  <br>
 
-    <button onclick="mc.enter_rosbridge()">Enter Rosbridge</button><br>
-    <button onclick="mc.exit_rosbridge()">Exit Rosbridge</button><br>
+  <div id="jibostate" style="position:fixed;width:50%;right:20px;top:20px;background-color:lightblue;text-align:right;padding:20px;font-family:sans-serif"></div>
 
-    <br>
+  <button onclick="mc.enter_rosbridge(); setClicked(this)">Enter Rosbridge</button><br>
+  <button onclick="mc.exit_rosbridge(); setClicked(this)">Exit Rosbridge</button><br>
 
-    <button onclick="mc.position(1)">Position 1</button><br>
-    <button onclick="mc.position(2)">Position 2</button><br>
+  <br>
 
-    <br>
+  <button onclick="mc.position(1); setClicked(this)">Position 1</button><br>
+  <button onclick="mc.position(2); setClicked(this)">Position 2</button><br>
 
-    <button onclick="sendDanceMove('motion-twerk')">Twerk</button>
-        <button onclick="sendDanceMove('motion-robot')">Robot</button>
-        <button onclick="sendDanceMove('motion-rocking')">Rocking Chair</button>
-        <button onclick="sendDanceMove('motion-sidestep')">Side Stepper</button>
-        <button onclick="sendDanceMove('motion-samba')">Samba</button>
-        <button onclick="sendDanceMove('motion-jazz')">Smooth Jazz</button>
-        <button onclick="sendDanceMove('motion-disco')">Disco</button>
-        <button onclick="sendDanceMove('motion-feelings')">Heart Beat</button>
-        <button onclick="sendDanceMove('motion-backstepper')">Back Stepper</button>
-        <button onclick="sendDanceMove('motion-carlton1')">Carlton 1</button>
-        <button onclick="sendDanceMove('motion-carlton2')">Carlton 2</button>
-        <button onclick="sendDanceMove('motion-clockworker')">Clockworker</button>
-        <button onclick="sendDanceMove('motion-doughkneader')">Dough Kneader</button>
-        <button onclick="sendDanceMove('motion-footstomper')">Foot Stomper</button>
-        <button onclick="sendDanceMove('motion-happylucky')">Happy Lucky</button>
-        <button onclick="sendDanceMove('motion-headbanger')">Headbanger</button>
-        <button onclick="sendDanceMove('motion-headdipper')">Headdipper</button>
-        <button onclick="sendDanceMove('motion-pigeon')">Pigeon</button>
+  <br>
 
-        
-    <hr style="margin-top:16px;margin-bottom:16px">
+  <button onclick="sendDanceMove('motion-twerk'); setClicked(this)">Twerk</button>
+  <button onclick="sendDanceMove('motion-robot'); setClicked(this)">Robot</button>
+  <button onclick="sendDanceMove('motion-rocking'); setClicked(this)">Rocking Chair</button>
+  <button onclick="sendDanceMove('motion-sidestep'); setClicked(this)">Side Stepper</button>
+  <button onclick="sendDanceMove('motion-samba'); setClicked(this)">Samba</button>
+  <button onclick="sendDanceMove('motion-jazz'); setClicked(this)">Smooth Jazz</button>
+  <button onclick="sendDanceMove('motion-disco'); setClicked(this)">Disco</button>
+  <button onclick="sendDanceMove('motion-feelings'); setClicked(this)">Heart Beat</button>
+  <button onclick="sendDanceMove('motion-backstepper'); setClicked(this)">Back Stepper</button>
+  <button onclick="sendDanceMove('motion-carlton1'); setClicked(this)">Carlton 1</button>
+  <button onclick="sendDanceMove('motion-carlton2'); setClicked(this)">Carlton 2</button>
+  <button onclick="sendDanceMove('motion-clockworker'); setClicked(this)">Clockworker</button>
+  <button onclick="sendDanceMove('motion-doughkneader'); setClicked(this)">Dough Kneader</button>
+  <button onclick="sendDanceMove('motion-footstomper'); setClicked(this)">Foot Stomper</button>
+  <button onclick="sendDanceMove('motion-happylucky'); setClicked(this)">Happy Lucky</button>
+  <button onclick="sendDanceMove('motion-headbanger'); setClicked(this)">Headbanger</button>
+  <button onclick="sendDanceMove('motion-headdipper'); setClicked(this)">Headdipper</button>
+  <button onclick="sendDanceMove('motion-pigeon'); setClicked(this)">Pigeon</button>
 
-    <button onclick="mc.speech('ispeak')">I speak...</button><br>
-    <button onclick="mc.speech('itmay')">It may...</button><br>
-    <button onclick="mc.speech('idont')">I don't look like...</button><br>
-    <!-- <button onclick="mc.speech('ordinaryrobot')">I am just...</button><br> -->
-    <button onclick="mc.speech('friendsdance')">Friends Dance</button><br>
-    <button onclick="mc.speech('stemkeeps')">STEM keeps...</button><br>
-    <button onclick="mc.speech('itprovides')">It provides...</button><br>
+  <hr style="margin-top:16px;margin-bottom:16px">
 
-    <hr style="margin-top:16px;margin-bottom:16px">
+  <hr style="margin-top:16px;margin-bottom:16px">
 
-    <button onclick="mc.speech('thisyear')">This year...</button><br>
-    <button onclick="mc.speech('ihave')">I have...</button><br>
-    <button onclick="mc.speech('butoverwhelmed')">but I am...</button><br>
+  <div id="console" style="position:fixed;width:50%;left:20px;bottom:20px;background-color:lightblue;padding:20px;font-family:sans-serif"></div>
 
-    <hr style="margin-top:16px;margin-bottom:16px">
-
-    <button onclick="mc.speech('dayofai')">Day of AI...</button><br>
-    <button onclick="mc.speech('butalso')">but also...</button><br>
-    <button onclick="mc.speech('everyday')">Everyday is...</button><br>
-    <button onclick="mc.speech('ipromise')">I promise...</button><br>
-    <br>
-    <button onclick="mc.speech('backto')">back to you...</button><br>
-    <button onclick="mc.position(2)">Position 2</button><br>
-
-    <br>
-    <hr>
-    <hr>
-    <br>
-    
-    <button onclick="mc.play('shift_01')">shift_01</button><br>
-    <button onclick="mc.play('shift_02')">shift_02</button><br>
-    <button onclick="mc.play('shift_03')">shift_03</button><br>
-    <button onclick="mc.play('shift_04')">shift_04</button><br>
-    <button onclick="mc.play('shift_05')">shift_05</button><br>
-    <button onclick="mc.play('shift_06')">shift_06</button><br>
-    <button onclick="mc.play('shift_07')">shift_07</button><br>
-    <button onclick="mc.play('shift_08')">shift_08</button><br>
-    <button onclick="mc.play('shift_09')">shift_09</button><br>
-    <button onclick="mc.play('shift_10')">shift_10</button><br>
-    <button onclick="mc.play('shift_11')">shift_11</button><br>
-    <button onclick="mc.play('shift_12')">shift_12</button><br>
-    <button onclick="mc.play('shift_13')">shift_13</button><br>
-    <button onclick="mc.play('shift_14')">shift_14</button><br>
-    <button onclick="mc.play('shift_15')">shift_15</button><br>
-    <button onclick="mc.play('shift_16')">shift_16</button><br>
-    <button onclick="mc.play('shift_17')">shift_17</button><br>
-    <button onclick="mc.play('shift_18')">shift_18</button><br>
-    <button onclick="mc.play('shift_19')">shift_19</button><br>
-    <button onclick="mc.play('shift_20')">shift_20</button><br>
-    <button onclick="mc.play('shift_21')">shift_21</button><br>
-    <button onclick="mc.play('shift_22')">shift_22</button><br>
-    <button onclick="mc.play('shift_23')">shift_23</button><br>
-    <button onclick="mc.play('shift_24')">shift_24</button><br>
-    <button onclick="mc.play('Listening_01')">Listening_01</button><br>
-    <button onclick="mc.play('engaged_05')">engaged_05</button><br>
-    <button onclick="mc.play('GotIt_02')">GotIt_02</button><br>
-    <button onclick="mc.play('Youre_Welcome_01')">Youre_Welcome_01</button><br>
-    <button onclick="mc.play('Youre_Welcome_02')">Youre_Welcome_02</button><br>
-    <button onclick="mc.play('Dont_Know_01')">Dont_Know_01</button><br>
-    <button onclick="mc.play('Dont_Know_02')">Dont_Know_02</button><br>
-    <button onclick="mc.play('Dont_Know_05')">Dont_Know_05</button><br>
-    <button onclick="mc.play('jiboji_ufo_01')">jiboji_ufo_01</button><br>
-    <button onclick="mc.play('emoji-ufo-hf-01')">emoji-ufo-hf-01</button><br>
-    <button onclick="mc.play('Embarassed_01')">Embarassed_01</button><br>
-    <button onclick="mc.play('Embarassed_02')">Embarassed_02</button><br>
-    <button onclick="mc.play('Shy_01')">Shy_01</button><br>
-    <button onclick="mc.play('Shy_02')">Shy_02</button><br>
-    <button onclick="mc.play('Emoji_HeartRed')">HeartRed</button><br>
-    <button onclick="mc.play('Emoji_HeartRed2')">HeartRed2</button><br>
-    <button onclick="mc.play('eye_happy_01')">eye_happy_01</button><br>
-    <button onclick="mc.play('eye_happy_02')">eye_happy_02</button><br>
-    <button onclick="mc.play('eye_happy_00')">eye_happy_00</button><br>
-    <button onclick="mc.play('Emoji_School')">Emoji_School</button><br>
-    <button onclick="mc.play('Emoji_FlowerRed')">FlowerRed</button><br>
-    <button onclick="mc.play('Emoji_FlowerBlue')">FlowerBlue</button><br>
-    <button onclick="mc.play('Emoji_FlowerWhite')">FlowerWhite</button><br>
-    <button onclick="mc.play('Emoji_PartyBlue')">Emoji_PartyBlue</button><br>
-    <button onclick="mc.play('Emoji_PartyPink')">Emoji_PartyPink</button><br>
-    <button onclick="mc.play('jiboji_fathers_day_01')">jiboji_fathers_day_01</button><br>
-    <button onclick="mc.play('jiboji_mothers_day_01')">jiboji_mothers_day_01</button><br>
-    <button onclick="mc.play('Emoji_Gift')">Emoji_Gift</button><br>
-    <button onclick="mc.play('1-gift-show-01')">1-gift-show-01</button><br>
-    <button onclick="mc.play('1-gift-show-02')">1-gift-show-02</button><br>
-    <button onclick="mc.play('1-gift-show-03')">1-gift-show-03</button><br>
-    <button onclick="mc.play('2-gift-tease-01')">2-gift-tease-01</button><br>
-    <button onclick="mc.play('3-gift-open-01')">3-gift-open-01</button><br>
-    <button onclick="mc.play('4-gift-hide-01')">4-gift-hide-01</button><br>
-    <button onclick="mc.play('emoji-washing-machine-hf-01')">emoji-washing-machine-hf-01</button><br>
-    <button onclick="mc.play('HeadTouch_03')">HeadTouch_03</button><br>
-    <button onclick="mc.play('jiboji_daylight_savings_spring_forward_01')">jiboji_daylight_savings_spring_forward_01</button><br>
-    <button onclick="mc.play('Word_Of_The_Day_Definition_Reveal')">Word_Of_The_Day_Definition_Reveal</button><br>
-    <button onclick="mc.play('emoji-chocolate-heart-box-hf-01')">emoji-chocolate-heart-box-hf-01</button><br>
-    <button onclick="mc.play('sorry_01')">sorry_01</button><br>
-    <button onclick="mc.play('sorry_02')">sorry_02</button><br>
-    <button onclick="mc.play('sorry_03')">sorry_03</button><br>
-    <button onclick="mc.play('no_4')">no_4</button><br>
-    <button onclick="mc.play('Emoji_Fireworks')">Fireworks</button><br>
-    <button onclick="mc.play('Glance_Left_01')">Glance_Left_01</button><br>
-    <button onclick="mc.play('Glance_Left_02')">Glance_Left_02</button><br>
-    <button onclick="mc.play('Glance_Left_03')">Glance_Left_03</button><br>
-    <button onclick="mc.play('Glance_Left_04')">Glance_Left_04</button><br>
-    <button onclick="mc.play('Glance_Right_01')">Glance_Right_01</button><br>
-    <button onclick="mc.play('Glance_Right_02')">Glance_Right_02</button><br>
-    <button onclick="mc.play('Glance_Right_03')">Glance_Right_03</button><br>
-    <button onclick="mc.play('Glance_Right_04')">Glance_Right_04</button><br>
-    <button onclick="mc.play('')"></button><br>
-
-  </body>
-  </html>
+</body>
+</html>

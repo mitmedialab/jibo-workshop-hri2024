@@ -9,11 +9,6 @@ let last_state;
 let last_state_cycle;
 let last_state_timestamp;
 
-const POSITIONS = {
-    1: { x: 0, y: 3, z: 0.5 },
-    2: { x: 3, y: 0, z: 0.9 },
-};
-
 const DANCE_MOVES = {
     'motion-twerk': "Dances/Twerk_01_02.keys",
     'motion-robot': "Dances/Robotic_01_01.keys",
@@ -39,12 +34,10 @@ class MC {
     init() {
         this.setupROS();
         this.setupSubscribers();
-        this.setupButtonHighlighting();
     }
 
     setupROS() {
         // Connecting to ROS
-
         this.ros = new ROSLIB.Ros({
             url : ROSBRIDGE_ADDRESS
         });
@@ -64,7 +57,6 @@ class MC {
 
     setupSubscribers() {
         // Subscribing to a Topic
-
         var listener = new ROSLIB.Topic({
             ros : this.ros,
             name : '/jibo_state',
@@ -95,30 +87,6 @@ class MC {
             elements.push(element);
             jibostate_div.replaceChildren(...elements);
         });
-    }
-
-    setupPublishers() {
-        // Publishing a Topic
-
-        var cmdVel = new ROSLIB.Topic({
-            ros : this.ros,
-            name : '/cmd_vel',
-            messageType : 'geometry_msgs/Twist'
-        });
-
-        var twist = new ROSLIB.Message({
-            linear : {
-                x : 0.1,
-                y : 0.2,
-                z : 0.3
-            },
-            angular : {
-                x : -0.1,
-                y : -0.2,
-                z : -0.3
-            }
-        });
-        cmdVel.publish(twist);
     }
 
     async waitUntilDancing() {
@@ -157,78 +125,6 @@ class MC {
         });
     }
 
-    callService() {
-        // Calling a service
-
-        var addTwoIntsClient = new ROSLIB.Service({
-            ros : this.ros,
-            name : '/add_two_ints',
-            serviceType : 'rospy_tutorials/AddTwoInts'
-        });
-
-        var request = new ROSLIB.ServiceRequest({
-            a : 1,
-            b : 2
-        });
-
-        addTwoIntsClient.callService(request, function(result) {
-            console.log('Result for service call on '
-                        + addTwoIntsClient.name
-                        + ': '
-                        + result.sum);
-        });
-    }
-
-    manipulateParams() {
-        // Getting and setting a param value
-
-        this.ros.getParams(function(params) {
-            console.log(params);
-        });
-
-        var maxVelX = new ROSLIB.Param({
-            ros : this.ros,
-            name : 'max_vel_y'
-        });
-
-        maxVelX.set(0.8);
-        maxVelX.get(function(value) {
-            console.log('MAX VAL: ' + value);
-        });
-    }
-
-    enter_rosbridge() {
-        console.log('entering rosbridge');
-        var jiboAction = new ROSLIB.Topic({
-            ros : this.ros,
-            name : '/jibo_remote',
-            messageType : '/jibo_msgs/JiboRemote'
-        });
-
-        var enter = new ROSLIB.Message({
-            do_enter_rosbridge_skill: true,
-        });
-
-        jiboAction.publish(enter);
-        console.log('entered?');
-    }
-
-    exit_rosbridge() {
-        console.log('exiting rosbridge');
-        var jiboAction = new ROSLIB.Topic({
-            ros : this.ros,
-            name : '/jibo_remote',
-            messageType : '/jibo_msgs/JiboRemote'
-        });
-
-        var exit = new ROSLIB.Message({
-            do_exit_rosbridge_skill: true,
-        });
-
-        jiboAction.publish(exit);
-        console.log('exited?');
-    }
-
     async dance(dance_key) {
         if (!dance_key) {
             console.error('must provide dance key');
@@ -241,8 +137,9 @@ class MC {
             return;
         }
 
-        await this.waitUntilNotDancing();
+        await this.waitUntilNotDancing(); // Ensure Jibo is not already dancing
         console.log(`dancing "${motion_text}"`);
+        
         var jiboAction = new ROSLIB.Topic({
             ros : this.ros,
             name : '/jibo',
@@ -250,15 +147,15 @@ class MC {
         });
 
         var dance = new ROSLIB.Message({
-            do_motion: true,
+            do_motion: true, // This ensures that the dance motion is triggered
             motion_text: motion_text,
         });
 
         jiboAction.publish(dance);
         console.log('danced?');
 
-        await this.waitUntilDancing();
-        await this.waitUntilNotDancing();
+        await this.waitUntilDancing(); // Wait until Jibo starts dancing
+        await this.waitUntilNotDancing(); // Wait until Jibo finishes dancing
     }
 }
 
