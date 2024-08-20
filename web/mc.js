@@ -29,15 +29,16 @@ const DANCE_MOVES = {
     'motion-headdipper': "Dances/Headdipper_01_01.keys",
     'motion-pigeon': "Dances/Pigeon_01_01.keys",
 };
-
 class MC {
     init() {
         this.setupROS();
         this.setupSubscribers();
+        this.setupButtonHighlighting();
     }
 
     setupROS() {
         // Connecting to ROS
+
         this.ros = new ROSLIB.Ros({
             url : ROSBRIDGE_ADDRESS
         });
@@ -57,13 +58,14 @@ class MC {
 
     setupSubscribers() {
         // Subscribing to a Topic
+
         var listener = new ROSLIB.Topic({
             ros : this.ros,
             name : '/jibo_state',
             messageType : 'jibo_msgs/JiboState'
         });
 
-        listener.subscribe(function(message) {
+        listener.subscribe((message) => {
             let jibostate_div = document.querySelector('#jibostate');
             if (!jibostate_div) {
                 return;
@@ -86,17 +88,44 @@ class MC {
             element.textContent = `${last_state_cycle}`;
             elements.push(element);
             jibostate_div.replaceChildren(...elements);
+
+            // Update button highlighting based on motion state
+            this.updateButtonHighlighting();
         });
     }
 
-    async waitUntilDancing() {
+    setupPublishers() {
+        // Publishing a Topic
+
+        var cmdVel = new ROSLIB.Topic({
+            ros : this.ros,
+            name : '/cmd_vel',
+            messageType : 'geometry_msgs/Twist'
+        });
+
+        var twist = new ROSLIB.Message({
+            linear : {
+                x : 0.1,
+                y : 0.2,
+                z : 0.3
+            },
+            angular : {
+                x : -0.1,
+                y : -0.2,
+                z : -0.3
+            }
+        });
+        cmdVel.publish(twist);
+    }
+
+    async waitUntilSpeaking() {
         return new Promise((resolve) => {
-            if (!last_state || last_state.is_dancing) {
+            if (!last_state || last_state.is_playing_sound) {
                 resolve();
             } else {
-                console.log('waiting for dance to start...');
+                console.log('waiting for speech to start...');
                 let checkAgain = () => {
-                    if (last_state.is_dancing) {
+                    if (last_state.is_playing_sound) {
                         resolve();
                     } else {
                         setTimeout(checkAgain, 50);
@@ -107,14 +136,14 @@ class MC {
         });
     }
 
-    async waitUntilNotDancing() {
+    async waitUntilNotSpeaking() {
         return new Promise((resolve) => {
-            if (!last_state || !last_state.is_dancing) {
+            if (!last_state || !last_state.is_playing_sound) {
                 resolve();
             } else {
-                console.log('waiting for dance to finish...');
+                console.log('waiting for speech to finish...');
                 let checkAgain = () => {
-                    if (!last_state.is_dancing) {
+                    if (!last_state.is_playing_sound) {
                         resolve();
                     } else {
                         setTimeout(checkAgain, 50);
@@ -125,39 +154,191 @@ class MC {
         });
     }
 
-    async dance(dance_key) {
-        if (!dance_key) {
-            console.error('must provide dance key');
+    callService() {
+        // Calling a service
+
+        var addTwoIntsClient = new ROSLIB.Service({
+            ros : this.ros,
+            name : '/add_two_ints',
+            serviceType : 'rospy_tutorials/AddTwoInts'
+        });
+
+        var request = new ROSLIB.ServiceRequest({
+            a : 1,
+            b : 2
+        });
+
+        addTwoIntsClient.callService(request, function(result) {
+            console.log('Result for service call on '
+                        + addTwoIntsClient.name
+                        + ': '
+                        + result.sum);
+        });
+    }
+
+    manipulateParams() {
+        // Getting and setting a param value
+
+        this.ros.getParams(function(params) {
+            console.log(params);
+        });
+
+        var maxVelX = new ROSLIB.Param({
+            ros : this.ros,
+            name : 'max_vel_y'
+        });
+
+        maxVelX.set(0.8);
+        maxVelX.get(function(value) {
+            console.log('MAX VAL: ' + value);
+        });
+    }
+
+    enter_rosbridge() {
+        console.log('entering rosbridge');
+        var jiboAction = new ROSLIB.Topic({
+            ros : this.ros,
+            name : '/jibo_remote',
+            messageType : '/jibo_msgs/JiboRemote'
+        });
+
+        var enter = new ROSLIB.Message({
+            do_enter_rosbridge_skill: true,
+        });
+
+        jiboAction.publish(enter);
+        console.log('entered?');
+    }
+
+    exit_rosbridge() {
+        console.log('exiting rosbridge');
+        var jiboAction = new ROSLIB.Topic({
+            ros : this.ros,
+            name : '/jibo_remote',
+            messageType : '/jibo_msgs/JiboRemote'
+        });
+
+        var exit = new ROSLIB.Message({
+            do_exit_rosbridge_skill: true,
+        });
+
+        jiboAction.publish(exit);
+        console.log('exited?');
+    }
+
+    async speech(speech_key, embodied_text) {
+        if ((!speech_key && !embodied_text) || (speech_key && embodied_text)) {
+            console.error('must provide embodied text or speech key');
             return;
         }
 
-        const motion_text = DANCE_MOVES[dance_key];
-        if (!motion_text) {
-            console.error('unknown dance_key', dance_key);
-            return;
+        if (speech_key && !embodied_text) {
+            embodied_text = SPEECHES[speech_key];
+            if (!embodied_text) {
+                console.error('unknown speech_key', speech_key);
+                return;
+            } else {
+                console.log('speaking key', speech_key);
+            }
         }
 
-        await this.waitUntilNotDancing(); // Ensure Jibo is not already dancing
-        console.log(`dancing "${motion_text}"`);
-        
+        embodied_text = `<duration stretch="1.11">${embodied_text}</duration>`;
+        await this.waitUntilNotSpeaking();
+        console.log(`speaking "${embodied_text}"`);
         var jiboAction = new ROSLIB.Topic({
             ros : this.ros,
             name : '/jibo',
             messageType : '/jibo_msgs/JiboAction'
         });
 
-        var dance = new ROSLIB.Message({
-            do_motion: true, // This ensures that the dance motion is triggered
-            motion_text: motion_text,
+        var speak = new ROSLIB.Message({
+            do_tts: true,
+            tts_text: embodied_text,
         });
 
-        jiboAction.publish(dance);
-        console.log('danced?');
+        jiboAction.publish(speak);
+        console.log('spoke?');
 
-        await this.waitUntilDancing(); // Wait until Jibo starts dancing
-        await this.waitUntilNotDancing(); // Wait until Jibo finishes dancing
+        await this.waitUntilSpeaking();
+        await this.waitUntilNotSpeaking();
+        if (speech_key && speech_key !== 'backto') {
+            this.position(1);
+        }
+    }
+
+    play(name) {
+        console.log('posture');
+        let embodied_text = `<es name='${name}' endNaturnal='true' nonBlocking='true' />.`;
+        this.speech(undefined, embodied_text);
+    }
+
+    position(position_num) {
+        let target_position;
+        if (target_position = POSITIONS[position_num]) {
+            console.log('moving to position', position_num);
+            var jiboAction = new ROSLIB.Topic({
+                ros : this.ros,
+                name : '/jibo',
+                messageType : '/jibo_msgs/JiboAction'
+            });
+
+            var lookat = new ROSLIB.Message({
+                do_lookat: true,
+                lookat: target_position,
+            });
+
+            jiboAction.publish(lookat);
+            console.log('moved?');
+        } else {
+            console.error('undefined position num', position_num);
+        }
+    }
+
+    setupButtonHighlighting() {
+        document.addEventListener('click', (event) => {
+            if (event.target instanceof HTMLButtonElement) {
+                console.log('button click!');
+                // Reset the color of all buttons
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(btn => btn.classList.remove('clicked'));
+                
+                // Set the color of the clicked button
+                event.target.classList.add('clicked');
+
+                // Check if Jibo is doing a motion
+                if (last_state && last_state.doing_motion) {
+                    event.target.style.backgroundColor = 'lightcoral';
+                } else {
+                    event.target.style.backgroundColor = 'lightgreen';
+                }
+            }
+        });
+    }
+
+    async sendDanceMove(move) {
+        console.log(`sending dance move: ${move}`);
+        // Logic to send the dance move
+        var jiboAction = new ROSLIB.Topic({
+            ros : this.ros,
+            name : '/jibo_remote',
+            messageType : '/jibo_msgs/JiboRemote'
+        });
+
+        var moveMessage = new ROSLIB.Message({
+            do_dance: true,
+            dance_move: move
+        });
+
+        jiboAction.publish(moveMessage);
+    }
+
+    updateButtonHighlighting() {
+        // Update the highlighting based on the current state
+        if (last_state && last_state.doing_motion) {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.add('doing-motion'));
+        }
     }
 }
 
-const mc = new MC();
-mc.init();
+window.MC = MC;
