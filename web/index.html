@@ -1,93 +1,83 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
+  <head>
+    <meta charset="utf-8" />
 
-  <!--
-  <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-  -->
-  <script type="text/javascript" src="eventemitter2.min.js"></script>
-  <script type="text/javascript" src="roslib.min.js"></script>
-  <script type="text/javascript" src="mc.js"></script>
-  <script type="text/javascript">
-    let mc = new MC();
-    mc.init();
+    <!--
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    -->
+    <script type="text/javascript" src="eventemitter2.min.js"></script>
+    <script type="text/javascript" src="roslib.min.js"></script>
+    <script type="text/javascript" src="mc.js"></script>
+    <script type="text/javascript">
+      let mc = new MC();
+      mc.init();
+    </script>
+    <style>
+      button {
+      min-width:120px;
+      padding:3px;
+      text-align:left;
+      font-size:14px;
+      font-weight:700;
+      border:2px solid darkgrey;
+      background-color:lightblue;
+      margin:1px;
+      }
+      body{ font-family: sans-serif; }
+    </style>
+  </head>
 
-    function setClicked(button) {
-      // Reset the color of all buttons
-      const buttons = document.querySelectorAll('button');
-      buttons.forEach(btn => btn.classList.remove('clicked'));
-      
-      // Set the color of the clicked button
-      button.classList.add('clicked');
-    }
-  </script>
-  <style>
-    button {
-      min-width: 120px;
-      padding: 3px;
-      text-align: left;
-      font-size: 14px;
-      font-weight: 700;
-      border: 2px solid darkgrey;
-      background-color: lightblue;
-      margin: 1px;
-    }
-    button.clicked {
-      background-color: lightcoral; /* Color when clicked */
-      color: white;
-    }
-    body { font-family: sans-serif; }
-  </style>
-</head>
+  <body>
+    <h1>Jibo Mass STEM Week Intro</h1>
+    <br>
 
-<body>
-  <h1>Jibo Mass STEM Week Intro</h1>
-  <br>
+    <div id="jibostate" style="position:fixed;width:50%;right:20px;top:20px;background-color:lightblue;text-align:right;padding:20px;font-family:sans-serif"></div>
 
-  <div id="jibostate" style="position:fixed;width:50%;right:20px;top:20px;background-color:lightblue;text-align:right;padding:20px;font-family:sans-serif"></div>
+    <button onclick="mc.enter_rosbridge()">Enter Rosbridge</button><br>
+    <button onclick="mc.exit_rosbridge()">Exit Rosbridge</button><br>
 
-  <button onclick="mc.enter_rosbridge(); setClicked(this)">Enter Rosbridge</button><br>
-  <button onclick="mc.exit_rosbridge(); setClicked(this)">Exit Rosbridge</button><br>
+    <br>
 
-  <br>
+    <button onclick="mc.position(1)">Position 1</button><br>
+    <button onclick="mc.position(2)">Position 2</button><br>
 
-  <button onclick="mc.position(1); setClicked(this)">Position 1</button><br>
-  <button onclick="mc.position(2); setClicked(this)">Position 2</button><br>
+    <br>
 
-  <br>
-  <div id="buttons-container">
-    <button id="btn-emoji">Say Emoji</button>
-    <button id="btn-dance">Say Dance</button>
-    <button id="btn-headtouch">Say Headtouch</button>
-    <button id="btn-hello">Say Hello</button>
-</div>
+    <button onclick="mc.speech(undefined, 'um');">um</button><br>
+    <button onclick="mc.speech('aitest')">AI Test</button><br>
+    <button onclick="mc.speech('emoji')">Emoji</button><br>
+    <button onclick="mc.speech('dance')">Dance</button><br>
+    <button onclick="mc.speech('hello')">Hello</button><br>
+    <br>
+    <hr>
+    <hr>
+    <br>
+    
+    <br>
+    <hr>
+    <hr>
+    <br>
 
-  <button onclick="sendDanceMove('motion-twerk'); setClicked(this)">Twerk</button>
-  <button onclick="sendDanceMove('motion-robot'); setClicked(this)">Robot</button>
-  <button onclick="sendDanceMove('motion-rocking'); setClicked(this)">Rocking Chair</button>
-  <button onclick="sendDanceMove('motion-sidestep'); setClicked(this)">Side Stepper</button>
-  <button onclick="sendDanceMove('motion-samba'); setClicked(this)">Samba</button>
-  <button onclick="sendDanceMove('motion-jazz'); setClicked(this)">Smooth Jazz</button>
-  <button onclick="sendDanceMove('motion-disco'); setClicked(this)">Disco</button>
-  <button onclick="sendDanceMove('motion-feelings'); setClicked(this)">Heart Beat</button>
-  <button onclick="sendDanceMove('motion-backstepper'); setClicked(this)">Back Stepper</button>
-  <button onclick="sendDanceMove('motion-carlton1'); setClicked(this)">Carlton 1</button>
-  <button onclick="sendDanceMove('motion-carlton2'); setClicked(this)">Carlton 2</button>
-  <button onclick="sendDanceMove('motion-clockworker'); setClicked(this)">Clockworker</button>
-  <button onclick="sendDanceMove('motion-doughkneader'); setClicked(this)">Dough Kneader</button>
-  <button onclick="sendDanceMove('motion-footstomper'); setClicked(this)">Foot Stomper</button>
-  <button onclick="sendDanceMove('motion-happylucky'); setClicked(this)">Happy Lucky</button>
-  <button onclick="sendDanceMove('motion-headbanger'); setClicked(this)">Headbanger</button>
-  <button onclick="sendDanceMove('motion-headdipper'); setClicked(this)">Headdipper</button>
-  <button onclick="sendDanceMove('motion-pigeon'); setClicked(this)">Pigeon</button>
-
-  <hr style="margin-top:16px;margin-bottom:16px">
-
-  <hr style="margin-top:16px;margin-bottom:16px">
-
-  <div id="console" style="position:fixed;width:50%;left:20px;bottom:20px;background-color:lightblue;padding:20px;font-family:sans-serif"></div>
-
-</body>
+    <!-- New Dance Motion Buttons -->
+    <button onclick="mc.motion('motion-twerk')">Twerk</button><br>
+    <button onclick="mc.motion('motion-robot')">Robot</button><br>
+    <button onclick="mc.motion('motion-rocking')">Rocking</button><br>
+    <button onclick="mc.motion('motion-sidestep')">Sidestep</button><br>
+    <button onclick="mc.motion('motion-samba')">Samba</button><br>
+    <button onclick="mc.motion('motion-jazz')">Jazz</button><br>
+    <button onclick="mc.motion('motion-disco')">Disco</button><br>
+    <button onclick="mc.motion('motion-feelings')">Feelings</button><br>
+    <button onclick="mc.motion('motion-backstepper')">Backstepper</button><br>
+    <button onclick="mc.motion('motion-carlton1')">Carlton 1</button><br>
+    <button onclick="mc.motion('motion-carlton2')">Carlton 2</button><br>
+    <button onclick="mc.motion('motion-clockworker')">Clockworker</button><br>
+    <button onclick="mc.motion('motion-doughkneader')">Doughkneader</button><br>
+    <button onclick="mc.motion('motion-footstomper')">Footstomper</button><br>
+    <button onclick="mc.motion('motion-happylucky')">Happylucky</button><br>
+    <button onclick="mc.motion('motion-headbanger')">Headbanger</button><br>
+    <button onclick="mc.motion('motion-headdipper')">Headdipper</button><br>
+    <button onclick="mc.motion('motion-pigeon')">Pigeon</button><br>
+  </body>
 </html>
