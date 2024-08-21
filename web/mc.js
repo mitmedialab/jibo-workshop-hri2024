@@ -607,6 +607,71 @@ class MC {
         }
     }
 
+    async performAction(speech_key, embodied_text, doing_motions) {
+        if ((!speech_key && !embodied_text && !doing_motions) || (speech_key && embodied_text)) {
+            console.error('must provide embodied text, speech key, or doing_motions');
+            return;
+        }
+    
+        if (doing_motions) {
+            // Perform movement actions
+            console.log('performing motion');
+    
+            // Define the movement action message
+            var jiboAction = new ROSLIB.Topic({
+                ros : this.ros,
+                name : '/jibo',
+                messageType : '/jibo_msgs/JiboAction'
+            });
+    
+            var motionMessage = new ROSLIB.Message({
+                do_motion: true,
+                // Define specific motion or animation here
+                motion_type: 'example_motion'  // Replace 'example_motion' with the actual motion type
+            });
+    
+            jiboAction.publish(motionMessage);
+            console.log('motion performed');
+    
+            await this.waitUntilNotMoving();  // Ensure there's a method to wait until motion completes
+            return;  // Exit early if only performing a motion
+        }
+    
+        if (speech_key && !embodied_text) {
+            embodied_text = SPEECHES[speech_key];
+            if (!embodied_text) {
+                console.error('unknown speech_key', speech_key);
+                return;
+            } else {
+                console.log('speaking key', speech_key);
+            }
+        }
+    
+        embodied_text = `<duration stretch="1.11">${embodied_text}</duration>`;
+        await this.waitUntilNotSpeaking();
+        console.log(`speaking "${embodied_text}"`);
+        
+        var jiboAction = new ROSLIB.Topic({
+            ros : this.ros,
+            name : '/jibo',
+            messageType : '/jibo_msgs/JiboAction'
+        });
+    
+        var speak = new ROSLIB.Message({
+            do_tts: true,
+            tts_text: embodied_text
+        });
+    
+        jiboAction.publish(speak);
+        console.log('spoke?');
+    
+        await this.waitUntilSpeaking();
+        await this.waitUntilNotSpeaking();
+        if (speech_key && speech_key !== 'backto') {
+            this.position(1);
+        }
+    }
+    
 
     play(name) {
         console.log('posture');
